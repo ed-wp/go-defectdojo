@@ -71,7 +71,7 @@ But be careful modifying this as large limit sizes can tie up resources on the d
 
 
 ## Examples
-Provided are two examples, [get-products](examples/get-products) and [get-all-products](examples/get-all-products) in the [examples](examples)` folder.
+Provided are two examples, [get-products](examples/get-products) and [get-all-products](examples/get-all-products) in the [examples](examples) folder.
 
 ### get-products
 This example shows basic library use and the dangers of pagination.

@@ -1,4 +1,4 @@
-# defectdojo
+# go-defectdojo
 Library to simplify interacting with the [DefectDojo API](https://github.com/DefectDojo/django-DefectDojo)
 
 ## API

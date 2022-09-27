@@ -46,7 +46,7 @@ type PaginatedList[L any] struct {
 For example, if you'd like to iterate the results and print them out:
 ```
 for i, v := range pgl.Results {
-    fmt.Printf("[%d] Result: %#v\n", i, end)
+    fmt.Printf("[%d] Result: %#v\n", i, v)
 }
 ```
 

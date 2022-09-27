@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"regexp"
 )
 
 const (
@@ -36,17 +35,8 @@ type Product struct {
 	Prefetch                   interface{} `json:"prefetch,omitempty" url:"prefetch,omitempty"`
 }
 
-type PaginatedProductList struct {
-	Count    int        // Number of Results
-	Next     string     // URL to next set of results
-	Previous string     // URL to previous set of results
-	Results  []*Product // List of Product results
-	//lint:ignore U1000 required field
-	prefetch interface{} // Prefetch data, currently unsupported
-}
-
-func (d *DefectDojoAPI) GetProducts(ctx context.Context, product *Product, options *RequestOptions) (*PaginatedProductList, error) {
-	out := &PaginatedProductList{}
+func (d *DefectDojoAPI) GetProducts(ctx context.Context, product *Product, options *RequestOptions) (*PaginatedList[Product], error) {
+	out := &PaginatedList[Product]{}
 	err := d.get(ctx, productAPIBase, options, product, out)
 	if err != nil {
 		return nil, err
@@ -54,32 +44,14 @@ func (d *DefectDojoAPI) GetProducts(ctx context.Context, product *Product, optio
 	return out, nil
 }
 
-func (d *DefectDojoAPI) GetProductByGitURL(ctx context.Context, gitURL string, gitURLMetaField string) (*Product, error) {
-	product := &Product{}
-	regex, err := regexp.Compile("[^/:]+/[^/]+$")
+// beta, using generics
+func (d *DefectDojoAPI) GetAllProducts(ctx context.Context, product *Product, options *RequestOptions) (*PaginatedList[Product], error) {
+	out := &PaginatedList[Product]{}
+	err := d.getAll(ctx, productAPIBase, options, product, out)
 	if err != nil {
 		return nil, err
 	}
-	match := regex.FindString(gitURL)
-	if match == "" {
-		return nil, fmt.Errorf("failed to extract org/repo from git url: %s", gitURL)
-	}
-
-	product.Name = match
-
-	out := &PaginatedProductList{}
-	err = d.get(ctx, productAPIBase, DefaultRequestOptions, product, out)
-	if err != nil {
-		return nil, err
-	}
-	for i, prod := range out.Results {
-		for _, meta := range prod.ProductMeta {
-			if meta.Name == gitURLMetaField && meta.Value == gitURL {
-				return out.Results[i], nil
-			}
-		}
-	}
-	return nil, fmt.Errorf("no repositories had metadata field \"%s\" with a value of \"%s\"", gitURLMetaField, gitURL)
+	return out, nil
 }
 
 func (d *DefectDojoAPI) AddProduct(ctx context.Context, product *Product) (*Product, error) {

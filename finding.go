@@ -85,21 +85,12 @@ type JiraIssue struct {
 	FindingGroup int    `json:"finding_group,omitempty" url:"finding_group,omitempty"`
 }
 
-type PaginatedFindingList struct {
-	Count    int        // Number of Results
-	Next     string     // URL to next set of results
-	Previous string     // URL to previous set of results
-	Results  []*Finding // List of Finding results
-	//lint:ignore U1000 required field
-	prefetch interface{} // Prefetch data, currently unsupported
-}
-
-func (d *DefectDojoAPI) GetFindings(ctx context.Context, finding *Finding, options *RequestOptions) (*PaginatedFindingList, error) {
+func (d *DefectDojoAPI) GetFindings(ctx context.Context, finding *Finding, options *RequestOptions) (*PaginatedList[Finding], error) {
 	if options.Limit == 0 {
 		return nil, ErrorInvalidOptions
 	}
 
-	out := &PaginatedFindingList{}
+	out := &PaginatedList[Finding]{}
 	err := d.get(ctx, findingAPIBase, options, finding, out)
 	if err != nil {
 		return nil, err

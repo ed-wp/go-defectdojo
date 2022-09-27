@@ -26,21 +26,12 @@ type Endpoint struct {
 	EndpointStatus []int    `json:"endpoint_status,omitempty" url:"endpoint_status,omitempty"`
 }
 
-type PaginatedEndpointList struct {
-	Count    int         // Number of Results
-	Next     string      // URL to next set of results
-	Previous string      // URL to previous set of results
-	Results  []*Endpoint // List of Endpoint results
-	//lint:ignore U1000 required field
-	prefetch interface{} // Prefetch data, currently unsupported
-}
-
-func (d *DefectDojoAPI) GetEndpoints(ctx context.Context, endpoint *Endpoint, options *RequestOptions) (*PaginatedEndpointList, error) {
+func (d *DefectDojoAPI) GetEndpoints(ctx context.Context, endpoint *Endpoint, options *RequestOptions) (*PaginatedList[Endpoint], error) {
 	if options.Limit == 0 {
 		return nil, ErrorInvalidOptions
 	}
 
-	out := &PaginatedEndpointList{}
+	out := &PaginatedList[Endpoint]{}
 	err := d.get(ctx, endpointAPIBase, options, endpoint, out)
 	if err != nil {
 		return nil, err

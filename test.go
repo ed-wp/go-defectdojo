@@ -36,17 +36,8 @@ type Test struct {
 	Files           []File         `json:"files,omitempty" url:"files,omitempty"`
 }
 
-type PaginatedTestList struct {
-	Count    int     // Number of Results
-	Next     string  // URL to next set of results
-	Previous string  // URL to previous set of results
-	Results  []*Test // List of Test results
-	//lint:ignore U1000 required field
-	prefetch interface{} // Prefetch data, currently unsupported
-}
-
-func (d *DefectDojoAPI) GetTests(ctx context.Context, test *Test, options *RequestOptions) (*PaginatedTestList, error) {
-	out := &PaginatedTestList{}
+func (d *DefectDojoAPI) GetTests(ctx context.Context, test *Test, options *RequestOptions) (*PaginatedList[Test], error) {
+	out := &PaginatedList[Test]{}
 	err := d.get(ctx, testAPIBase, options, test, out)
 	if err != nil {
 		return nil, err

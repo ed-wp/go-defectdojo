@@ -73,21 +73,12 @@ type File struct {
 	Title string `json:"title,omitempty" url:"title,omitempty"`
 }
 
-type PaginatedEngagementList struct {
-	Count    int           // Number of Results
-	Next     string        // URL to next set of results
-	Previous string        // URL to previous set of results
-	Results  []*Engagement // List of Engagement results
-	//lint:ignore U1000 required field
-	prefetch interface{} // Prefetch data, currently unsupported
-}
-
-func (d *DefectDojoAPI) GetEngagements(ctx context.Context, engagement *Engagement, options *RequestOptions) (*PaginatedEngagementList, error) {
+func (d *DefectDojoAPI) GetEngagements(ctx context.Context, engagement *Engagement, options *RequestOptions) (*PaginatedList[Engagement], error) {
 	if options.Limit == 0 {
 		return nil, ErrorInvalidOptions
 	}
 
-	out := &PaginatedEngagementList{}
+	out := &PaginatedList[Engagement]{}
 	err := d.get(ctx, engagementAPIBase, options, engagement, out)
 	if err != nil {
 		return nil, err

@@ -40,7 +40,7 @@ func (p *PaginatedList[L]) HasNext() bool {
 }
 
 func (p *PaginatedList[L]) NextRequestOptions() (*RequestOptions, error) {
-	if p.Next != "" {
+	if p.Next == "" {
 		return nil, errors.New("no additional results available")
 	}
 	u, err := url.Parse(p.Next)

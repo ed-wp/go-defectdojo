@@ -51,6 +51,5 @@ func (d *DefectDojoAPI) UpdateMetadata(ctx context.Context, metadata *Metadata) 
 }
 
 func (d *DefectDojoAPI) RemoveMetadata(ctx context.Context, metadata *Metadata) error {
-
-	return nil
+	return fmt.Errorf("not implemented")
 }

@@ -109,6 +109,5 @@ func (d *DefectDojoAPI) UpdateEngagement(ctx context.Context, engagement *Engage
 }
 
 func (d *DefectDojoAPI) RemoveEngagement(ctx context.Context, engagement *Engagement) error {
-
-	return nil
+	return fmt.Errorf("not implemented")
 }

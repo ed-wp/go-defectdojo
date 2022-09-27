@@ -68,6 +68,5 @@ func (d *DefectDojoAPI) UpdateTest(ctx context.Context, test *Test) (*Test, erro
 }
 
 func (d *DefectDojoAPI) RemoveTest(ctx context.Context, test *Test) error {
-
-	return nil
+	return fmt.Errorf("not implemented")
 }

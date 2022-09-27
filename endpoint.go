@@ -62,6 +62,5 @@ func (d *DefectDojoAPI) UpdateEndpoint(ctx context.Context, endpoint *Endpoint) 
 }
 
 func (d *DefectDojoAPI) RemoveEndpoint(ctx context.Context, endpoint *Endpoint) error {
-
-	return nil
+	return fmt.Errorf("not implemented")
 }

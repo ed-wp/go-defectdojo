@@ -1,29 +1,23 @@
 # go-defectdojo
 Library to simplify interacting with the [DefectDojo API](https://github.com/DefectDojo/django-DefectDojo)
 
-## API
+## Configuration
 
 API Config
 ```
 type APIConfig struct {
-	Host     string       // DefectDojo Server, https://example.org
+	Host     string       // DefectDojo Server, ex: https://demo.defectdojo.org
 	APIToken string       // DefectDojo V2 API Token
 	Client   *http.Client // Optional, can provide a custom HTTP Client, defaults to http.DefaultClient
 	Verbose  bool         // Prints requests and stack traces on API errors
 }
 ```
 
-Example:
-```
-config := &defectdojo.APIConfig{
-    Host:     "https://demo.defectdojo.org",
-    APIToken: "do-not-hardcode-me",
-}
-api := defectdojo.New(config)
-```
+See examples for usage. 
 
-### Pagination
+## Pagination
 DefectDojo API is paginated, so you must provide Offsets and Limits for any Get requests.
+Failure to do so may lead to truncated or missing results.
 
 These offsets and limits as passed into a get function using the RequestOptions struct:
 ```
@@ -50,7 +44,14 @@ for i, v := range pgl.Results {
 }
 ```
 
-Optionally, for simple requests, you can use the default options:
+There are additional helper functions for PaginatedLists, 
+`HasNext()` which tells you if there are additional results
+and `NextRequestOptions()` which will generate the next RequestOptions 
+with the correct limit/offset. 
+
+You can check out the [get-all-products example](examples/get-all-products) for an approach to handling pagination.
+
+For simple requests, you can use the default options:
 ```
 var DefaultRequestOptions = &RequestOptions{
 	Offset: 0,
@@ -58,7 +59,46 @@ var DefaultRequestOptions = &RequestOptions{
 }
 ```
 
-## Endpoint
+or your just create your own:
+```
+options := &RequestOptions{
+	Offset: 0,
+	Limit:  50,
+}
+```
+
+But be careful modifying this as large limit sizes can tie up resources on the defectdojo server.
+
+
+## Examples
+Provided are two examples, [get-products](examples/get-products) and [get-all-products](examples/get-all-products) in the [examples](examples) folder.
+
+### get-products
+This example shows basic library use and the dangers of pagination.
+
+### get-all-products
+This example builds on the first, and shows an approach to handling pagination.
+
+## Search / Filtering
+The struct passed into any Get... function are search parameters.
+The above examples, we use `defectdojo.Product{}`, which means we are searching for anything.
+
+For instance:
+```
+p := &defectdojo.Product{
+	Name: "name-i-am-looking-for",
+}
+products, err = api.GetProducts(ctx, p, options)
+```
+will return products with `name-i-am-looking-for` in their name.
+
+## API Docs
+This library supports [Endpoint](#endpoint), [Engagement](#engagement), [Finding](#finding), [Metadata](#metadata), [Product](#product), [ProductType](#producttype), and [Test](#test)
+with `Get`, `Add`, and `Update`.
+
+`Remove` functionality is not implemented yet.
+
+### Endpoint
 
 ```
 endpoint := &defectdojo.Endpoint{
@@ -67,20 +107,19 @@ endpoint := &defectdojo.Endpoint{
 }
 ```
 
-### GetEndpoints
+#### GetEndpoints
 
 ```
 // Search for products matching provided Host and Product ID
 pgl, err := api.GetEndpoints(ctx, endpoint, defectdojo.DefaultRequestOptions)
 
-// check for errors before using the result
+// Check for errors before using the result
 if err != nil {
     ...
 }
 ```
 
-
-## Engagement
+### Engagement
 
 ```
 engagement := &defectdojo.Engagement{
@@ -89,19 +128,19 @@ engagement := &defectdojo.Engagement{
 }
 ```
 
-### GetEngagements
+#### GetEngagements
 
 ```
 // Search for engagements matching provided Name and Description
 pgl, err := api.GetEngagements(ctx, engagement, defectdojo.DefaultRequestOptions)
 
-// check for errors before using the result
+// Check for errors before using the result
 if err != nil {
     ...
 }
 ```
 
-## Finding
+### Finding
 
 ```
 finding := &defectdojo.Finding{
@@ -110,19 +149,19 @@ finding := &defectdojo.Finding{
 }
 ```
 
-### GetFindings
+#### GetFindings
 
 ```
 // Search for findings matching provided Title and Description
 pgl, err := api.GetFindings(ctx, finding, defectdojo.DefaultRequestOptions)
 
-// check for errors before using the result
+// Check for errors before using the result
 if err != nil {
     ...
 }
 ```
 
-## ImportScan
+### ImportScan
 
 ```
 scan := &defectdojo.ImportScan{
@@ -132,14 +171,14 @@ scan := &defectdojo.ImportScan{
 }
 ```
 
-### ImportScan
+#### ImportScan
 
 ```
 // Import a scan with a scan report (json, sarif, etc)
 scan, err := api.ImportScan(ctx, scan, scanReport)
 ```
 
-## Metadata
+### Metadata
 
 ```
 metadata := &defectdojo.Metadata{
@@ -148,19 +187,19 @@ metadata := &defectdojo.Metadata{
 }
 ```
 
-### GetMetadatas
+#### GetMetadatas
 
 ```
 // Search for metadata matching provided Name and Value
-pgl, err := api.GetMetadatas(ctx, metadata, defectdojo.DefaultRequestOptions)
+pgl, err := api.GetMetadatas(ctx, metadata, options)
 
-// check for errors before using the result
+// Check for errors before using the result
 if err != nil {
     ...
 }
 ```
 
-## Product
+### Product
 
 ```
 product := &defectdojo.Product{
@@ -169,19 +208,20 @@ product := &defectdojo.Product{
 }
 ```
 
-### GetProducts
+#### GetProducts
 
 ```
 // Search for products matching provided Name and Description
-pgl, err := api.GetProducts(ctx, product, defectdojo.DefaultRequestOptions)
+products, err := api.GetProducts(ctx, product, options)
 
-// check for errors before using the result
+// Check for errors before using the result
 if err != nil {
     ...
 }
+// Use products.Results 
 ```
 
-## ProductType
+### ProductType
 
 ```
 productType := &defectdojo.ProductType{
@@ -190,18 +230,40 @@ productType := &defectdojo.ProductType{
 }
 ```
 
-### GetProductTypes
+#### GetProductTypes
 
 ```
 // Search for product types matching provided Name and Description
-pgl, err := api.GetProductTypes(ctx, product, defectdojo.DefaultRequestOptions)
+productTypes, err := api.GetProductTypes(ctx, productType, options)
 
-// check for errors before using the result
+// Check for errors before using the result
 if err != nil {
     ...
 }
+// Use productTypes.Results
 ```
 
-## User
+### Test
+```
+productType := &defectdojo.Test{
+	Title:       "title",
+	Description: "description",
+}
+```
 
-Not yet supported
+#### GetTests
+
+```
+// Search for product types matching provided Name and Description
+tests, err := api.GetTests(ctx, product, options)
+
+// Check for errors before using the result
+if err != nil {
+    ...
+}
+// Use tests.Results
+```
+
+### User
+
+Not yet implemented.

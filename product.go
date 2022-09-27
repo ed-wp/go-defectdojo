@@ -44,7 +44,7 @@ func (d *DefectDojoAPI) GetProducts(ctx context.Context, product *Product, optio
 	return out, nil
 }
 
-// beta, using generics
+// beta, using generics, use with caution
 func (d *DefectDojoAPI) GetAllProducts(ctx context.Context, product *Product, options *RequestOptions) (*PaginatedList[Product], error) {
 	out := &PaginatedList[Product]{}
 	err := d.getAll(ctx, productAPIBase, options, product, out)
@@ -77,6 +77,5 @@ func (d *DefectDojoAPI) UpdateProduct(ctx context.Context, product *Product) (*P
 }
 
 func (d *DefectDojoAPI) RemoveProduct(ctx context.Context, product *Product) error {
-
-	return nil
+	return fmt.Errorf("not implemented")
 }

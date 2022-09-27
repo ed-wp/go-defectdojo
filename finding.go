@@ -121,6 +121,5 @@ func (d *DefectDojoAPI) UpdateFinding(ctx context.Context, finding *Finding) (*F
 }
 
 func (d *DefectDojoAPI) RemoveFinding(ctx context.Context, finding *Finding) error {
-
-	return nil
+	return fmt.Errorf("not implemented")
 }

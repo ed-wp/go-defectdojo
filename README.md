@@ -33,6 +33,23 @@ type RequestOptions struct {
 }
 ```
 
+The API returns a pagination wrapper around the results:
+```
+type PaginatedList[L any] struct {
+	Count    int    // Number of Results
+	Next     string // URL to next set of results
+	Previous string // URL to previous set of results
+	Results  []*L
+}
+```
+
+For example, if you'd like to iterate the results and print them out:
+```
+for i, v := range pgl.Results {
+    fmt.Printf("[%d] Result: %#v\n", i, end)
+}
+```
+
 Optionally, for simple requests, you can use the default options:
 ```
 var DefaultRequestOptions = &RequestOptions{
@@ -62,23 +79,6 @@ if err != nil {
 }
 ```
 
-The API returns a pagination wrapper around the results:
-```
-type PaginatedEndpointList struct {
-	Count    int         // Number of Results
-	Next     string      // URL to next set of results
-	Previous string      // URL to previous set of results
-	Results  []*Endpoint // List of Endpoint results
-	prefetch interface{} // Prefetch data, currently unsupported
-}
-```
-
-For example, if you'd like to iterate the results and print them out:
-```
-for i, end := range pgl.Results {
-    fmt.Printf("[%d] Endpoint Id: %d Host: %s\n", i, end.Id, end.Host)
-}
-```
 
 ## Engagement
 
@@ -101,24 +101,6 @@ if err != nil {
 }
 ```
 
-The API returns a pagination wrapper around the results:
-```
-type PaginatedEngagementList struct {
-	Count    int           // Number of Results
-	Next     string        // URL to next set of results
-	Previous string        // URL to previous set of results
-	Results  []*Engagement // List of Engagement results
-	prefetch interface{}   // Prefetch data, currently unsupported
-}
-```
-
-For example, if you'd like to iterate the results and print them out:
-```
-for i, engage := range pgl.Results {
-    fmt.Printf("[%d] Engagement Id: %d Name: %s\n", i, engage.Id, engage.Name)
-}
-```
-
 ## Finding
 
 ```
@@ -137,24 +119,6 @@ pgl, err := api.GetFindings(ctx, finding, defectdojo.DefaultRequestOptions)
 // check for errors before using the result
 if err != nil {
     ...
-}
-```
-
-The API returns a pagination wrapper around the results:
-```
-type PaginatedFindingList struct {
-	Count    int         // Number of Results
-	Next     string      // URL to next set of results
-	Previous string      // URL to previous set of results
-	Results  []*Finding  // List of Product results
-	prefetch interface{} // Prefetch data, currently unsupported
-}
-```
-
-For example, if you'd like to iterate the results and print them out:
-```
-for i, find := range pgl.Results {
-    fmt.Printf("[%d] Finding Id: %d Title: %s\n", i, find.Id, find.Title)
 }
 ```
 
@@ -196,24 +160,6 @@ if err != nil {
 }
 ```
 
-The API returns a pagination wrapper around the results:
-```
-type PaginatedMetadataList struct {
-	Count    int         // Number of Results
-	Next     string      // URL to next set of results
-	Previous string      // URL to previous set of results
-	Results  []*Metadata // List of Metadata results
-	prefetch interface{} // Prefetch data, currently unsupported
-}
-```
-
-For example, if you'd like to iterate the results and print them out:
-```
-for i, meta := range pgl.Results {
-    fmt.Printf("[%d] Metadata Name: %s Value: %s\n", i, meta.Name, meta.Value)
-}
-```
-
 ## Product
 
 ```
@@ -235,33 +181,6 @@ if err != nil {
 }
 ```
 
-The API returns a pagination wrapper around the results:
-```
-type PaginatedProductList struct {
-	Count    int         // Number of Results
-	Next     string      // URL to next set of results
-	Previous string      // URL to previous set of results
-	Results  []*Product  // List of Product results
-	prefetch interface{} // Prefetch data, currently unsupported
-}
-```
-
-For example, if you'd like to iterate the results and print them out:
-```
-for i, prod := range pgl.Results {
-    fmt.Printf("[%d] Product Id: %d Name: %s\n", i, prod.Id, prod.Name)
-}
-```
-### GetProductByGitURL
-Fetch a Product by a GitURL. A gitURLMetaField specifies which metadata field to match the GitURL.
-
-```
-product, err := ddAPI.GetProductByGitURL(ctx, repoURL, "GitURL")
-if err != nil {
-	...
-}
-```
-
 ## ProductType
 
 ```
@@ -280,24 +199,6 @@ pgl, err := api.GetProductTypes(ctx, product, defectdojo.DefaultRequestOptions)
 // check for errors before using the result
 if err != nil {
     ...
-}
-```
-
-The API returns a pagination wrapper around the results:
-```
-type PaginatedProductTypeList struct {
-	Count    int            // Number of Results
-	Next     string         // URL to next set of results
-	Previous string         // URL to previous set of results
-	Results  []*ProductType // List of Product results
-	prefetch interface{}    // Prefetch data, currently unsupported
-}
-```
-
-For example, if you'd like to iterate the results and print them out:
-```
-for i, prodType := range pgl.Results {
-    fmt.Printf("[%d] Id: %d Name: %s\n", i, prodType.Id, prodType.Name)
 }
 ```
 

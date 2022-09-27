@@ -103,6 +103,30 @@ func (d *DefectDojoAPI) get(ctx context.Context, path string, options *RequestOp
 	return nil
 }
 
+func (d *DefectDojoAPI) getAll(ctx context.Context, path string, options *RequestOptions, in interface{}, out PaginatedLister) error {
+	if options.Limit == 0 {
+		return ErrorInvalidOptions
+	}
+
+	for options != nil {
+		err := d.get(ctx, path, options, in, out)
+		if err != nil {
+			return err
+		}
+		out.SaveResults()
+		if out.HasNext() {
+			options, err = out.NextRequestOptions()
+			if err != nil {
+				return err
+			}
+		} else {
+			break
+		}
+	}
+	out.RestoreResults()
+	return nil
+}
+
 func (d *DefectDojoAPI) post(ctx context.Context, path string, in interface{}, out interface{}) error {
 	res, err := d.request(ctx, http.MethodPost, path, in)
 	if err != nil {

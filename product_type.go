@@ -23,17 +23,8 @@ type ProductType struct {
 	AuthorizationGroups []int  `json:"authorization_groups,omitempty" url:"authorization_groups,omitempty"`
 }
 
-type PaginatedProductTypeList struct {
-	Count    int            // Number of Results
-	Next     string         // URL to next set of results
-	Previous string         // URL to previous set of results
-	Results  []*ProductType // List of ProductType results
-	//lint:ignore U1000 required field
-	prefetch interface{} // Prefetch data, currently unsupported
-}
-
-func (d *DefectDojoAPI) GetProductTypes(ctx context.Context, productType *ProductType, options *RequestOptions) (*PaginatedProductTypeList, error) {
-	out := &PaginatedProductTypeList{}
+func (d *DefectDojoAPI) GetProductTypes(ctx context.Context, productType *ProductType, options *RequestOptions) (*PaginatedList[ProductType], error) {
+	out := &PaginatedList[ProductType]{}
 	err := d.get(ctx, productTypeAPIBase, options, productType, out)
 	if err != nil {
 		return nil, err

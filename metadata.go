@@ -19,17 +19,8 @@ type Metadata struct {
 	Value    string `json:"value" url:"value"`
 }
 
-type PaginatedMetadataList struct {
-	Count    int         // Number of Results
-	Next     string      // URL to next set of results
-	Previous string      // URL to previous set of results
-	Results  []*Metadata // List of Metadata results
-	//lint:ignore U1000 required field
-	prefetch interface{} // Prefetch data, currently unsupported
-}
-
-func (d *DefectDojoAPI) GetMetadatas(ctx context.Context, metadata *Metadata, options *RequestOptions) (*PaginatedMetadataList, error) {
-	out := &PaginatedMetadataList{}
+func (d *DefectDojoAPI) GetMetadatas(ctx context.Context, metadata *Metadata, options *RequestOptions) (*PaginatedList[Metadata], error) {
+	out := &PaginatedList[Metadata]{}
 	err := d.get(ctx, metadataAPIBase, options, metadata, out)
 	if err != nil {
 		return nil, err
